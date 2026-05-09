@@ -1,7 +1,7 @@
 #include "DynamicArray.h"
 
 template <class T>
-DynamicArray<T>::DynamicArray() : data(nullptr), size(0), capacity(0) {}
+DynamicArray<T>::DynamicArray() : data(nullptr), size(0) {}
 
 template <class T>
 DynamicArray<T>::DynamicArray(T* items, int count) {
@@ -10,42 +10,40 @@ DynamicArray<T>::DynamicArray(T* items, int count) {
     if (count == 0) {
         data = nullptr;
         size = 0;
-        capacity = 0;
         return;
     }
     
-    size = count;
-    capacity = count;
-    data = new T[capacity];
+    data = new T[count];
     for (int i = 0; i < count; ++i) {
         data[i] = items[i];
     }
+    size = count;
 }
 
 template <class T>
-DynamicArray<T>::DynamicArray(int capacity) {
-    if (capacity < 0) throw ErrorCode::NEGATIVE_SIZE;
+DynamicArray<T>::DynamicArray(int size) {
+    if (size < 0) throw ErrorCode::NEGATIVE_SIZE;
     
-    this->capacity = capacity;
-    this->size = 0;
-    
-    if (capacity == 0) {
+    if (size == 0) {
         data = nullptr;
-    } else {
-        data = new T[capacity];
+        this->size = 0;
+        return;
     }
+    
+    data = new T[size];
+    this->size = size;
 }
 
 template <class T>
 DynamicArray<T>::DynamicArray(const DynamicArray<T>& other) 
-    : size(other.size), capacity(other.capacity) 
+    : size(other.size) 
 {
-    if (capacity == 0) {
+    if (size == 0) {
         data = nullptr;
         return;
     }
     
-    data = new T[capacity];
+    data = new T[size];
     for (int i = 0; i < size; ++i) {
         data[i] = other.data[i];
     }
@@ -64,14 +62,10 @@ T DynamicArray<T>::Get(int index) const {
     return data[index];
 }
 
+
 template <class T>
 int DynamicArray<T>::GetSize() const {
     return size;
-}
-
-template <class T>
-int DynamicArray<T>::GetCapacity() const {
-    return capacity;
 }
 
 template <class T>
@@ -83,19 +77,18 @@ void DynamicArray<T>::Set(int index, T value) {
 }
 
 template <class T>
-void DynamicArray<T>::Resize(int newCapacity) {
-    if (newCapacity < 0) throw ErrorCode::NEGATIVE_SIZE;
+void DynamicArray<T>::Resize(int newSize) {
+    if (newSize < 0) throw ErrorCode::NEGATIVE_SIZE;
     
-    if (newCapacity == 0) {
+    if (newSize == 0) {
         delete[] data;
         data = nullptr;
-        capacity = 0;
         size = 0;
         return;
     }
     
-    T* newData = new T[newCapacity];
-    int elementsToCopy = (newCapacity < size) ? newCapacity : size;
+    T* newData = new T[newSize];
+    int elementsToCopy = (newSize < size) ? newSize : size;
     
     for (int i = 0; i < elementsToCopy; ++i) {
         newData[i] = data[i];
@@ -103,22 +96,7 @@ void DynamicArray<T>::Resize(int newCapacity) {
     
     delete[] data;
     data = newData;
-    capacity = newCapacity;
-    
-    if (newCapacity < size) {
-        size = newCapacity;
-    }
-}
-
-template <class T>
-void DynamicArray<T>::Append(T item) {
-    if (size == capacity) {
-        int newCapacity = (capacity == 0) ? 1 : capacity * 2;
-        Resize(newCapacity);
-    }
-    
-    data[size] = item;
-    ++size;
+    size = newSize;
 }
 
 template <class T>
@@ -128,14 +106,13 @@ DynamicArray<T>& DynamicArray<T>::operator=(const DynamicArray<T>& other) {
     delete[] data;
     
     size = other.size;
-    capacity = other.capacity;
     
-    if (capacity == 0) {
+    if (size == 0) {
         data = nullptr;
         return *this;
     }
     
-    data = new T[capacity];
+    data = new T[size];
     for (int i = 0; i < size; ++i) {
         data[i] = other.data[i];
     }
