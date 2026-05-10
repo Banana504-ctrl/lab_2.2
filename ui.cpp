@@ -39,40 +39,26 @@ int* InputArray(int& size) {
     return arr;
 }
 
-int MultiplyBy(int x) {
-    static int multiplier = 1;
-    multiplier = multiplier;
-    return x * multiplier;
-}
-
-bool IsEven(int x) { return x % 2 == 0; }
-bool IsOdd(int x) { return x % 2 != 0; }
-bool IsPositive(int x) { return x > 0; }
-
-static int g_multiplier = 1;
-
-int MultiplyByGlobal(int x) {
-    return x * g_multiplier;
-}
-
 template <class T>
 void WorkWithSequence(Sequence<T>*& seq, bool isMutable) {
     if (seq == nullptr) return;
     
     int choice = 0;
+    
     while (choice != 11) {
-        wcout << L"\nОПЕРАЦИИ\n";
-        wcout << L"1. Получить значение элемента по индексу (Get)\n";
-        wcout << L"2. Задать значение элемента по индексу (Set)\n";
-        wcout << L"3. Добавить элемент в конец (Append)\n";
-        wcout << L"4. Добавить элемент в начало (Prepend)\n";
-        wcout << L"5. Вставить элемент на выбранную позицию (InsertAt)\n";
-        wcout << L"6. Показать содержимое\n";
-        wcout << L"7. Применить функцию (умножение) к кажому элементу (Map)\n";
-        wcout << L"8. Отфильтровать элементы (Where)\n";
-        wcout << L"9. Получить значение для всей последовательности (Reduce)\n";
-        
         bool isAdaptive = (dynamic_cast<AdaptiveSequence<T>*>(seq) != nullptr);
+        
+        wcout << L"\nОПЕРАЦИИ\n";
+        wcout << L"1. Получить значение (Get)\n";
+        wcout << L"2. Задать значение (Set)\n";
+        wcout << L"3. Добавить в конец (Append)\n";
+        wcout << L"4. Добавить в начало (Prepend)\n";
+        wcout << L"5. Вставить на позицию (InsertAt)\n";
+        wcout << L"6. Показать содержимое\n";
+        wcout << L"7. Применить функцию к каждому (Map)\n";
+        wcout << L"8. Отфильтровать (Where)\n";
+        wcout << L"9. Свернуть в одно значение (Reduce)\n";
+        
         if (isAdaptive) {
             wcout << L"10. Переключить режим (Array <=> List)\n";
             wcout << L"11. Завершить\n";
@@ -114,7 +100,7 @@ void WorkWithSequence(Sequence<T>*& seq, bool isMutable) {
                         if (newSeq) {
                             delete seq;
                             seq = newSeq;
-                            wcout << L"Создан новый объект\n";
+                            wcout << L"Готово\n";
                         }
                     }
                     break;
@@ -134,7 +120,7 @@ void WorkWithSequence(Sequence<T>*& seq, bool isMutable) {
                         if (newSeq) {
                             delete seq;
                             seq = newSeq;
-                            wcout << L"Создан новый объект\n";
+                            wcout << L"Готово\n";
                         }
                     }
                     break;
@@ -145,7 +131,7 @@ void WorkWithSequence(Sequence<T>*& seq, bool isMutable) {
                     T value = InputInt(L"Введите значение: ");
                     if (isMutable) {
                         seq->InsertAt(value, realIndex);
-                        wcout << L"Операция выполнена\n";
+                        wcout << L"Готово\n";
                     } else {
                         Sequence<T>* newSeq = nullptr;
                         if (auto* arrSeq = dynamic_cast<ImmutableArraySequence<T>*>(seq)) {
@@ -156,7 +142,7 @@ void WorkWithSequence(Sequence<T>*& seq, bool isMutable) {
                         if (newSeq) {
                             delete seq;
                             seq = newSeq;
-                            wcout << L"Создан новый объект\n";
+                            wcout << L"Готово\n";
                         }
                     }
                     break;
@@ -178,89 +164,111 @@ void WorkWithSequence(Sequence<T>*& seq, bool isMutable) {
                     }
                     break;
                 }
-                case 7: {  // Map
-                    wcout << L"Введите множитель: ";
-                    int multiplier = InputInt(L"");
-                    g_multiplier = multiplier; 
-                    Sequence<T>* newSeq = seq->Map(MultiplyByGlobal);
-                    delete seq;
-                    seq = newSeq;
-                    wcout << L"Новое содержимое:\n";
-                    wcout << L"[";
-                    for (int i = 0; i < seq->GetLength(); ++i) {
-                        wcout << seq->Get(i);
-                        if (i != seq->GetLength() - 1) wcout << L", ";
+                case 7: {
+                        wcout << L"Введите множитель: ";
+                    int multiplier;
+                    wcin >> multiplier;
+                    
+                    int len = seq->GetLength();
+                    int* temp = new int[len];
+                    for (int i = 0; i < len; ++i) {
+                        temp[i] = seq->Get(i) * multiplier;
                     }
-                    wcout << L"]\n";
-                    break;
-                }
-                case 8: {  // Where
-                    wcout << L"Выберите фильтр:\n";
-                    wcout << L"1. Только чётные числа\n";
-                    wcout << L"2. Только нечётные числа\n";
-                    wcout << L"3. Только положительные (>0)\n";
-                    wcout << L"Введите номер операции: ";
-                    int filterChoice;
-                    wcin >> filterChoice;
                     
-                    bool (*predicate)(int) = nullptr;
-                    if (filterChoice == 1) predicate = IsEven;
-                    else if (filterChoice == 2) predicate = IsOdd;
-                    else if (filterChoice == 3) predicate = IsPositive;
+                    Sequence<int>* newSeq = nullptr;
+                                    
+                    if (dynamic_cast<ArraySequence<int>*>(seq)) {
+                        newSeq = new ArraySequence<int>(temp, len);
+                    } else if (dynamic_cast<ListSequence<int>*>(seq)) {
+                        newSeq = new ListSequence<int>(temp, len);
+                    } else if (dynamic_cast<ImmutableArraySequence<int>*>(seq)) {
+                        newSeq = new ImmutableArraySequence<int>(temp, len);
+                    } else if (dynamic_cast<ImmutableListSequence<int>*>(seq)) {
+                        newSeq = new ImmutableListSequence<int>(temp, len);
+                    } else if (dynamic_cast<AdaptiveSequence<int>*>(seq)) {
+                        AdaptiveSequence<int>* adaptSeq = new AdaptiveSequence<int>();
+                        for (int i = 0; i < len; ++i) {
+                            adaptSeq->Append(temp[i]);
+                        }
+                        newSeq = adaptSeq;
+                    }
                     
-                    if (predicate) {
-                        Sequence<T>* newSeq = seq->Where(predicate);
+                    delete[] temp;
+                    
+                    if (newSeq) {
                         delete seq;
                         seq = newSeq;
-                        wcout << L"Новое содержимое:\n";
-                        wcout << L"[";
+                        wcout << L"Результат: ";
                         for (int i = 0; i < seq->GetLength(); ++i) {
-                            wcout << seq->Get(i);
-                            if (i != seq->GetLength() - 1) wcout << L", ";
+                            wcout << seq->Get(i) << L" ";
                         }
-                        wcout << L"]\n";
-                    } else {
-                        wcout << L"Неверный выбор фильтра!\n";
+                        wcout << endl;
                     }
                     break;
                 }
-                case 9: {  
-                    wcout << L"Выберите операцию Reduce:\n";
+                case 8: {
+                    wcout << L"Значение фильтра: ";
+                                    int threshold;
+                    wcin >> threshold;
+
+                    int len = seq->GetLength();
+                    int* temp = new int[len];
+                    int count = 0;
+                    for (int i = 0; i < len; ++i) {
+                        int val = seq->Get(i);
+                        if (val > threshold) {
+                            temp[count] = val;
+                            ++count;
+                        }
+                    }
+                    
+                    Sequence<int>* newSeq = nullptr;
+                    
+                    if (dynamic_cast<ArraySequence<int>*>(seq)) {
+                        newSeq = new ArraySequence<int>(temp, count);
+                    } else if (dynamic_cast<ListSequence<int>*>(seq)) {
+                        newSeq = new ListSequence<int>(temp, count);
+                    } else if (dynamic_cast<ImmutableArraySequence<int>*>(seq)) {
+                        newSeq = new ImmutableArraySequence<int>(temp, count);
+                    } else if (dynamic_cast<ImmutableListSequence<int>*>(seq)) {
+                        newSeq = new ImmutableListSequence<int>(temp, count);
+                    } else if (dynamic_cast<AdaptiveSequence<int>*>(seq)) {
+                        AdaptiveSequence<int>* adaptSeq = new AdaptiveSequence<int>();
+                        for (int i = 0; i < count; ++i) {
+                            adaptSeq->Append(temp[i]);
+                        }
+                        newSeq = adaptSeq;
+                    }
+                    
+                    delete[] temp;
+                    
+                    if (newSeq) {
+                        delete seq;
+                        seq = newSeq;
+                        wcout << L"Результат: ";
+                        for (int i = 0; i < seq->GetLength(); ++i) {
+                            wcout << seq->Get(i) << L" ";
+                        }
+                        wcout << endl;
+                    }
+                    break;
+                }
+                case 9: {
+                    wcout << L"Выберите операцию:\n";
                     wcout << L"1. Сумма\n";
                     wcout << L"2. Произведение\n";
-                    wcout << L"3. Максимум\n";
-                    wcout << L"4. Минимум\n";
-                    wcout << L"Введите номер операции: ";
-                    int reduceChoice;
-                    wcin >> reduceChoice;
-                    
-                    T result;
-                    if (reduceChoice == 1) {
-                        result = seq->Reduce([](int a, int b) { return a + b; }, 0);
+                    int op;
+                    wcin >> op;
+                    if (op == 1) {
+                        auto sum = [](T a, T b) { return a + b; };
+                        T result = seq->Reduce(sum, 0);
                         wcout << L"Сумма: " << result << endl;
-                    } else if (reduceChoice == 2) {
-                        if (seq->GetLength() == 0) {
-                            wcout << L"Ошибка: Пустая последовательность!\n";
-                        } else {
-                            result = seq->Reduce([](int a, int b) { return a * b; }, 1);
-                            wcout << L"Произведение: " << result << endl;
-                        }
-                    } else if (reduceChoice == 3) {
-                        if (seq->GetLength() == 0) {
-                            wcout << L"Ошибка: Пустая последовательность!\n";
-                        } else {
-                            result = seq->Reduce([](int a, int b) { return (a > b) ? a : b; }, seq->Get(0));
-                            wcout << L"Максимум: " << result << endl;
-                        }
-                    } else if (reduceChoice == 4) {
-                        if (seq->GetLength() == 0) {
-                            wcout << L"Ошибка: Пустая последовательность!\n";
-                        } else {
-                            result = seq->Reduce([](int a, int b) { return (a < b) ? a : b; }, seq->Get(0));
-                            wcout << L"Минимум: " << result << endl;
-                        }
+                    } else if (op == 2) {
+                        auto prod = [](T a, T b) { return a * b; };
+                        T result = seq->Reduce(prod, 1);
+                        wcout << L"Произведение: " << result << endl;
                     } else {
-                        wcout << L"Неверный выбор!\n";
+                        wcout << L"Неверный выбор\n";
                     }
                     break;
                 }
@@ -269,7 +277,7 @@ void WorkWithSequence(Sequence<T>*& seq, bool isMutable) {
                         auto* adapt = dynamic_cast<AdaptiveSequence<T>*>(seq);
                         if (adapt) {
                             adapt->SwitchMode();
-                            wcout << L"Текущий режим: "
+                            wcout << L"Режим переключён! Текущий: "
                                   << (adapt->GetCurrentMode() == StorageMode::ARRAY ? L"Массив" : L"Список") << endl;
                         }
                     } else {
@@ -285,13 +293,13 @@ void WorkWithSequence(Sequence<T>*& seq, bool isMutable) {
         catch (ErrorCode e) {
             switch (e) {
                 case ErrorCode::INDEX_OUT_OF_RANGE:
-                    wcout << L"Ошибка: Индекс вне диапазона!\n";
+                    wcout << L"Ошибка: Индекс вне диапазона\n";
                     break;
                 case ErrorCode::EMPTY_CONTAINER:
-                    wcout << L"Ошибка: Последовательность пуста!\n";
+                    wcout << L"Ошибка: Последовательность пуста\n";
                     break;
                 case ErrorCode::OPERATION_NOT_ALLOWED:
-                    wcout << L"Ошибка: Операция запрещена для Immutable!\n";
+                    wcout << L"Ошибка: Операция запрещена для Immutable\n";
                     break;
                 default:
                     wcout << L"Неизвестная ошибка\n";
@@ -309,12 +317,12 @@ void WorkWithBitSequence(BitSequence*& seq) {
     int choice = 0;
     while (choice != 8) {
         wcout << L"\nОперации с BitSequence\n";
-        wcout << L"1. Получить значение бита по индексу (Get)\n";
-        wcout << L"2. Установить значение бита бит (Set)\n";
+        wcout << L"1. Получить бит (Get)\n";
+        wcout << L"2. Установить бит (Set)\n";
         wcout << L"3. Добавить бит в конец (Append)\n";
         wcout << L"4. Добавить бит в начало (Prepend)\n";
         wcout << L"5. Вставить бит на позицию (InsertAt)\n";
-        wcout << L"6. Показать содержимое\n";
+        wcout << L"6. Показать всё\n";
         wcout << L"7. Побитовые операции (AND, OR, XOR, NOT)\n";
         wcout << L"8. Завершить\n";
         wcout << L"Ваш выбор: ";
@@ -323,7 +331,7 @@ void WorkWithBitSequence(BitSequence*& seq) {
         try {
             switch (choice) {
                 case 1: {
-                    int userIndex = InputInt(L"Введите индекс: ");
+                    int userIndex = InputInt(L"Введите индекс (с 1): ");
                     int realIndex = userIndex - 1;
                     wcout << L"Бит: " << (seq->Get(realIndex) ? L"1" : L"0") << endl;
                     break;
@@ -379,7 +387,7 @@ void WorkWithBitSequence(BitSequence*& seq) {
                     delete[] cstr;
                     
                     wcout << L"Выберите операцию:\n";
-                    wcout << L"1. AND\n2. OR\n3. XOR\n4. NOT (только для текущей)\n";
+                    wcout << L"1. AND\n2. OR\n3. XOR\n4. NOT\n";
                     int op;
                     wcin >> op;
                     
@@ -400,7 +408,7 @@ void WorkWithBitSequence(BitSequence*& seq) {
                     break;
                 }
                 case 8:
-                    wcout << L"Завершение\n";
+                    wcout << L"Завершение работы с BitSequence\n";
                     break;
                 default:
                     wcout << L"Неверный выбор\n";
@@ -409,13 +417,13 @@ void WorkWithBitSequence(BitSequence*& seq) {
         catch (ErrorCode e) {
             switch (e) {
                 case ErrorCode::INDEX_OUT_OF_RANGE:
-                    wcout << L"Ошибка: Индекс вне диапазона!\n";
+                    wcout << L"Ошибка: Индекс вне диапазона\n";
                     break;
                 case ErrorCode::EMPTY_CONTAINER:
-                    wcout << L"Ошибка: Последовательность пуста!\n";
+                    wcout << L"Ошибка: Последовательность пуста\n";
                     break;
                 case ErrorCode::INVALID_INPUT:
-                    wcout << L"Ошибка: Неверный ввод!\n";
+                    wcout << L"Ошибка: Неверный ввод\n";
                     break;
                 default:
                     wcout << L"Неизвестная ошибка\n";
@@ -428,34 +436,21 @@ void WorkWithBitSequence(BitSequence*& seq) {
 }
 
 void CreateAndWork() {
-    wcout << L"\nСоздание последовательности\n";
+    wcout << L"\nСОЗДАНИЕ ПОСЛЕДОВАТЕЛЬНОСТИ\n";
     wcout << L"Тип контейнера:\n";
-    wcout << L"1. ArraySequence (на основе массива)\n";
-    wcout << L"2. ListSequence (на основе списка)\n";
-    wcout << L"3. AdaptiveSequence (с ручным переключением)\n";
+    wcout << L"1. ArraySequence\n";
+    wcout << L"2. ListSequence\n";
+    wcout << L"3. AdaptiveSequence\n";
     wcout << L"4. BitSequence\n";
-    wcout << L"Введите номер контейнера: ";
+    wcout << L"Ваш выбор: ";
     
     int containerType;
     wcin >> containerType;
     
     if (containerType == 4) {
-    wstring bitStr;
-    bool valid = false;
-    
-        while (!valid) {
-            wcout << L"Введите битовую строку (только 0 и 1): ";
-            wcin >> bitStr;
-            
-            valid = true;
-            for (size_t i = 0; i < bitStr.length(); ++i) {
-                if (bitStr[i] != L'0' && bitStr[i] != L'1') {
-                    valid = false;
-                    wcout << L"Ошибка! Используйте только 0 и 1. Попробуйте снова.\n";
-                    break;
-                }
-            }
-        }
+        wcout << L"Введите битовую строку (прим. только 0 и 1): ";
+        wstring bitStr;
+        wcin >> bitStr;
         
         char* cstr = new char[bitStr.length() + 1];
         for (size_t i = 0; i < bitStr.length(); ++i) {
@@ -466,7 +461,7 @@ void CreateAndWork() {
         BitSequence* bitSeq = new BitSequence(cstr);
         delete[] cstr;
         
-        wcout << L"Исходное содержимое: ";
+        wcout << L"Начальное содержимое: ";
         for (int i = 0; i < bitSeq->GetLength(); ++i) {
             wcout << (bitSeq->Get(i) ? L"1" : L"0");
         }
@@ -478,9 +473,7 @@ void CreateAndWork() {
     }
     
     wcout << L"Вариант:\n";
-    wcout << L"1. Mutable\n";
-    wcout << L"2. Immutable\n";
-    wcout << L"Введите номер: \n";
+    wcout << L"1. Mutable\n2. Immutable\n";
     int variantType;
     wcin >> variantType;
     
@@ -501,7 +494,7 @@ void CreateAndWork() {
             else seq = new ImmutableListSequence<int>(data, size);
         }
         else if (containerType == 3) {
-            wcout << L"Исходный режим (1-массив, 2-список): ";
+            wcout << L"Начальный режим (1-массив, 2-список): ";
             int mode;
             wcin >> mode;
             auto* adaptSeq = new AdaptiveSequence<int>(data, size);
@@ -539,7 +532,7 @@ void runProgram() {
         wcout << L"\nГЛАВНОЕ МЕНЮ\n";
         wcout << L"1. Создать последовательность\n";
         wcout << L"2. Выйти\n";
-        wcout << L"Введите номер опреации: ";
+        wcout << L"Ваш выбор: ";
         wcin >> choice;
         
         if (choice == 1) {
@@ -547,6 +540,5 @@ void runProgram() {
         }
     }
     
-    wcout << L"\n<3 Работа завершена <3\n";
-    wcout << L"\n       ʕ •ᴥ•ʔ         \n";
+    wcout << L"До свидания!\n";
 }

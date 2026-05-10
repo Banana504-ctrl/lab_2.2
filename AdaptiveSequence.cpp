@@ -96,6 +96,11 @@ int AdaptiveSequence<T>::GetLength() const {
 }
 
 template <class T>
+void AdaptiveSequence<T>::Set(int index, T value) {
+    data->Set(index, value);
+}
+
+template <class T>
 void AdaptiveSequence<T>::Append(T item) {
     data->Append(item);
 }
@@ -108,6 +113,63 @@ void AdaptiveSequence<T>::Prepend(T item) {
 template <class T>
 void AdaptiveSequence<T>::InsertAt(T item, int index) {
     data->InsertAt(item, index);
+}
+
+template <class T>
+Sequence<T>* AdaptiveSequence<T>::Map(T (*func)(T)) const {
+    Sequence<T>* mappedData = data->Map(func);
+    
+    AdaptiveSequence<T>* result = new AdaptiveSequence<T>();
+    
+    if (mode == StorageMode::ARRAY) {
+        ArraySequence<T>* arrMapped = dynamic_cast<ArraySequence<T>*>(mappedData);
+        if (arrMapped) {
+            delete result->data;
+            result->data = new ArraySequence<T>(*arrMapped);
+            result->mode = StorageMode::ARRAY;
+        }
+    } else {
+        ListSequence<T>* listMapped = dynamic_cast<ListSequence<T>*>(mappedData);
+        if (listMapped) {
+            delete result->data;
+            result->data = new ListSequence<T>(*listMapped);
+            result->mode = StorageMode::LIST;
+        }
+    }
+    
+    delete mappedData;
+    return result;
+}
+
+template <class T>
+Sequence<T>* AdaptiveSequence<T>::Where(bool (*predicate)(T)) const {
+    Sequence<T>* filteredData = data->Where(predicate);
+    
+    AdaptiveSequence<T>* result = new AdaptiveSequence<T>();
+    
+    if (mode == StorageMode::ARRAY) {
+        ArraySequence<T>* arrFiltered = dynamic_cast<ArraySequence<T>*>(filteredData);
+        if (arrFiltered) {
+            delete result->data;
+            result->data = new ArraySequence<T>(*arrFiltered);
+            result->mode = StorageMode::ARRAY;
+        }
+    } else {
+        ListSequence<T>* listFiltered = dynamic_cast<ListSequence<T>*>(filteredData);
+        if (listFiltered) {
+            delete result->data;
+            result->data = new ListSequence<T>(*listFiltered);
+            result->mode = StorageMode::LIST;
+        }
+    }
+    
+    delete filteredData;
+    return result;
+}
+
+template <class T>
+T AdaptiveSequence<T>::Reduce(T (*func)(T, T), T initialValue) const {
+    return data->Reduce(func, initialValue);
 }
 
 template <class T>
@@ -124,24 +186,4 @@ AdaptiveSequence<T>& AdaptiveSequence<T>::operator=(const AdaptiveSequence<T>& o
     }
     
     return *this;
-}
-
-template <class T>
-Sequence<T>* AdaptiveSequence<T>::Map(T (*func)(T)) const {
-    return data->Map(func);
-}
-
-template <class T>
-Sequence<T>* AdaptiveSequence<T>::Where(bool (*predicate)(T)) const {
-    return data->Where(predicate);
-}
-
-template <class T>
-T AdaptiveSequence<T>::Reduce(T (*func)(T, T), T initialValue) const {
-    return data->Reduce(func, initialValue);
-}
-
-template <class T>
-void AdaptiveSequence<T>::Set(int index, T value) {
-    data->Set(index, value);
 }

@@ -21,14 +21,24 @@ public:
     T Get(int index) const override;
     int GetLength() const override;
     void Set(int index, T value) override;
-    
+
+    void Append(T item) override { 
+        (void)item;
+        throw ErrorCode::OPERATION_NOT_ALLOWED; 
+    }
+    void Prepend(T item) override { 
+        (void)item;
+        throw ErrorCode::OPERATION_NOT_ALLOWED; 
+    }
+    void InsertAt(T item, int index) override { 
+        (void)item;
+        (void)index;
+        throw ErrorCode::OPERATION_NOT_ALLOWED; 
+    }
+
     ImmutableListSequence<T>* AppendImmutable(T item) const;
     ImmutableListSequence<T>* PrependImmutable(T item) const;
     ImmutableListSequence<T>* InsertAtImmutable(T item, int index) const;
-    
-    void Append(T item) override { throw ErrorCode::OPERATION_NOT_ALLOWED; }
-    void Prepend(T item) override { throw ErrorCode::OPERATION_NOT_ALLOWED; }
-    void InsertAt(T item, int index) override { throw ErrorCode::OPERATION_NOT_ALLOWED; }
     
     Sequence<T>* Map(T (*func)(T)) const override;
     Sequence<T>* Where(bool (*predicate)(T)) const override;

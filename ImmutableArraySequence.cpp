@@ -49,7 +49,9 @@ int ImmutableArraySequence<T>::GetLength() const {
 }
 
 template <class T>
-void ImmutableArraySequence<T>::Set(int, T) {
+void ImmutableArraySequence<T>::Set(int index, T value) {
+    (void)index;
+    (void)value;
     throw ErrorCode::OPERATION_NOT_ALLOWED;
 }
 

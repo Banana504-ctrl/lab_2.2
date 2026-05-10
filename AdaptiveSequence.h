@@ -4,6 +4,7 @@
 #include "Sequence.h"
 #include "ArraySequence.h"
 #include "ListSequence.h"
+#include "errors.h"
 
 enum class StorageMode {
     ARRAY,
@@ -27,16 +28,16 @@ public:
     
     StorageMode GetCurrentMode() const;
     void SwitchMode();
-    
+
     T GetFirst() const override;
     T GetLast() const override;
     T Get(int index) const override;
     int GetLength() const override;
+    void Set(int index, T value) override;
     
     void Append(T item) override;
     void Prepend(T item) override;
     void InsertAt(T item, int index) override;
-    void Set(int index, T value) override;
     
     Sequence<T>* Map(T (*func)(T)) const override;
     Sequence<T>* Where(bool (*predicate)(T)) const override;

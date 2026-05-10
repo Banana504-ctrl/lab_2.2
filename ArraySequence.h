@@ -8,7 +8,7 @@ template <class T>
 class ArraySequence : public Sequence<T> {
 private:
     DynamicArray<T>* items;
-    int capacity;
+    int capacitySequence;
 
 public:
     ArraySequence();

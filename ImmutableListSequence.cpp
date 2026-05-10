@@ -47,7 +47,9 @@ int ImmutableListSequence<T>::GetLength() const {
 }
 
 template <class T>
-void ImmutableListSequence<T>::Set(int, T) {
+void ImmutableListSequence<T>::Set(int index, T value) {
+    (void)index;
+    (void)value;
     throw ErrorCode::OPERATION_NOT_ALLOWED;
 }
 
