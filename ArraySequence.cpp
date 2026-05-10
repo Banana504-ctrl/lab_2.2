@@ -3,7 +3,7 @@
 template <class T>
 ArraySequence<T>::ArraySequence() {
     items = new DynamicArray<T>();
-    capacitySequence = 0;
+    capacity = 0;
 }
 
 template <class T>
@@ -11,19 +11,19 @@ ArraySequence<T>::ArraySequence(T* items, int count) {
     if (count < 0) throw ErrorCode::NEGATIVE_SIZE;
     
     this->items = new DynamicArray<T>(items, count);
-    capacitySequence = count;
+    capacity = count;
 }
 
 template <class T>
 ArraySequence<T>::ArraySequence(const DynamicArray<T>& dynamicArray) {
     items = new DynamicArray<T>(dynamicArray);
-    capacitySequence = items->GetSize();
+    capacity = items->GetSize();
 }
 
 template <class T>
 ArraySequence<T>::ArraySequence(const ArraySequence<T>& other) {
     items = new DynamicArray<T>(*(other.items));
-    capacitySequence = other.capacitySequence;
+    capacity = other.capacity;
 }
 
 template <class T>
@@ -62,10 +62,10 @@ template <class T>
 void ArraySequence<T>::Append(T item) {
     int oldSize = GetLength();
     
-    if (oldSize >= capacitySequence) {
-        int newCapacity = (capacitySequence == 0) ? 1 : capacitySequence * 2;
+    if (oldSize >= capacity) {
+        int newCapacity = (capacity == 0) ? 1 : capacity * 2;
         items->Resize(newCapacity);
-        capacitySequence = newCapacity;
+        capacity = newCapacity;
     }
     
     items->Set(oldSize, item);
@@ -76,10 +76,10 @@ template <class T>
 void ArraySequence<T>::Prepend(T item) {
     int oldSize = GetLength();
     
-    if (oldSize >= capacitySequence) {
-        int newCapacity = (capacitySequence == 0) ? 1 : capacitySequence * 2;
+    if (oldSize >= capacity) {
+        int newCapacity = (capacity == 0) ? 1 : capacity * 2;
         items->Resize(newCapacity);
-        capacitySequence = newCapacity;
+        capacity = newCapacity;
     }
 
     for (int i = oldSize; i > 0; --i) {
@@ -95,10 +95,10 @@ void ArraySequence<T>::InsertAt(T item, int index) {
     
     int oldSize = GetLength();
     
-    if (oldSize >= capacitySequence) {
-        int newCapacity = (capacitySequence == 0) ? 1 : capacitySequence * 2;
+    if (oldSize >= capacity) {
+        int newCapacity = (capacity == 0) ? 1 : capacity * 2;
         items->Resize(newCapacity);
-        capacitySequence = newCapacity;
+        capacity = newCapacity;
     }
     
     for (int i = oldSize; i > index; --i) {
@@ -156,7 +156,7 @@ ArraySequence<T>& ArraySequence<T>::operator=(const ArraySequence<T>& other) {
     
     delete items;
     items = new DynamicArray<T>(*(other.items));
-    capacitySequence = other.capacitySequence;
+    capacity = other.capacity;
     
     return *this;
 }
