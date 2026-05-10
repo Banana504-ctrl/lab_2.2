@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra
+CXXFLAGS = -Wall -Wextra -O2 -I.
 
 TARGET = lab2.exe
 
@@ -15,10 +15,11 @@ $(TARGET): $(OBJECTS)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+test:
+	$(CXX) $(CXXFLAGS) -o test_runner.exe tests/test_runner.cpp
+	./test_runner.exe
+
 clean:
-	del /Q $(TARGET) $(OBJECTS) 2>nul || rm -f $(TARGET) $(OBJECTS)
+	del /Q *.o *.exe 2>nul || rm -f *.o *.exe
 
-run: $(TARGET)
-	./$(TARGET)
-
-.PHONY: all clean run
+.PHONY: all clean test

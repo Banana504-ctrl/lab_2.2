@@ -7,7 +7,8 @@ template <class T>
 class DynamicArray {
 private:
     T* data;
-    int size;
+    int capacity;  
+    int size;      
 
 public:
     DynamicArray();
@@ -17,10 +18,11 @@ public:
     ~DynamicArray();
     
     T Get(int index) const;
-    int GetSize() const;
+    int GetSize() const;    
+    int GetCapacity() const;
     
     void Set(int index, T value);
-    void Resize(int newSize);
+    void Resize(int newSize); 
     
     DynamicArray<T>& operator=(const DynamicArray<T>& other);
 };
