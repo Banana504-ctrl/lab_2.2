@@ -55,17 +55,16 @@ void ArraySequence<T>::Set(int index, T value) {
 
 template <class T>
 void ArraySequence<T>::Append(T item) {
-    int newSize = GetLength() + 1;
-    items->Resize(newSize);
-    items->Set(newSize - 1, item);
+    int oldSize = items->GetSize();
+    items->Resize(oldSize + 1);
+    items->Set(oldSize, item);
 }
 
 template <class T>
 void ArraySequence<T>::Prepend(T item) {
-    int newSize = GetLength() + 1;
-    items->Resize(newSize);
-    
-    for (int i = newSize - 1; i > 0; --i) {
+    int oldSize = items->GetSize();
+    items->Resize(oldSize + 1);
+    for (int i = oldSize; i > 0; --i) {
         items->Set(i, items->Get(i - 1));
     }
     items->Set(0, item);
@@ -75,10 +74,9 @@ template <class T>
 void ArraySequence<T>::InsertAt(T item, int index) {
     if (index < 0 || index > GetLength()) throw ErrorCode::INDEX_OUT_OF_RANGE;
     
-    int newSize = GetLength() + 1;
-    items->Resize(newSize);
-    
-    for (int i = newSize - 1; i > index; --i) {
+    int oldSize = items->GetSize();
+    items->Resize(oldSize + 1);
+    for (int i = oldSize; i > index; --i) {
         items->Set(i, items->Get(i - 1));
     }
     items->Set(index, item);
@@ -88,11 +86,9 @@ template <class T>
 Sequence<T>* ArraySequence<T>::Map(T (*func)(T)) const {
     int len = GetLength();
     T* temp = new T[len];
-    
     for (int i = 0; i < len; ++i) {
         temp[i] = func(Get(i));
     }
-    
     Sequence<T>* result = new ArraySequence<T>(temp, len);
     delete[] temp;
     return result;
@@ -103,7 +99,6 @@ Sequence<T>* ArraySequence<T>::Where(bool (*predicate)(T)) const {
     int len = GetLength();
     T* temp = new T[len];
     int count = 0;
-    
     for (int i = 0; i < len; ++i) {
         T value = Get(i);
         if (predicate(value)) {
@@ -111,7 +106,6 @@ Sequence<T>* ArraySequence<T>::Where(bool (*predicate)(T)) const {
             ++count;
         }
     }
-    
     Sequence<T>* result = new ArraySequence<T>(temp, count);
     delete[] temp;
     return result;
@@ -129,9 +123,7 @@ T ArraySequence<T>::Reduce(T (*func)(T, T), T initialValue) const {
 template <class T>
 ArraySequence<T>& ArraySequence<T>::operator=(const ArraySequence<T>& other) {
     if (this == &other) return *this;
-    
     delete items;
     items = new DynamicArray<T>(*(other.items));
-    
     return *this;
 }

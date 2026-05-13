@@ -1,25 +1,25 @@
 CXX = g++
 CXXFLAGS = -Wall -Wextra -O2 -I.
+WINLIBS = -lgdi32 -lcomctl32
 
-TARGET = lab2.exe
+TARGET_CONSOLE = lab2.exe
+TARGET_GUI = lab2_gui.exe
 
-SOURCES = main.cpp ui.cpp
+all: $(TARGET_CONSOLE)
 
-OBJECTS = $(SOURCES:.cpp=.o)
+$(TARGET_CONSOLE): main.cpp ui.cpp
+	$(CXX) $(CXXFLAGS) -o $(TARGET_CONSOLE) main.cpp ui.cpp
 
-all: $(TARGET)
+gui: $(TARGET_GUI)
 
-$(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS)
-
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+$(TARGET_GUI): main_gui.cpp
+	$(CXX) $(CXXFLAGS) -o $(TARGET_GUI) main_gui.cpp $(WINLIBS)
 
 test:
 	$(CXX) $(CXXFLAGS) -o test_runner.exe tests/test_runner.cpp
 	./test_runner.exe
 
 clean:
-	del /Q *.o *.exe 2>nul || rm -f *.o *.exe
+	del /Q *.exe 2>nul || rm -f *.exe
 
-.PHONY: all clean test
+.PHONY: all clean test gui

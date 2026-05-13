@@ -7,23 +7,23 @@ template <class T>
 class DynamicArray {
 private:
     T* data;
-    int capacity;  
-    int size;      
+    int size;
+
+    void copyFrom(const DynamicArray<T>& other);
+    void free();
 
 public:
     DynamicArray();
     DynamicArray(T* items, int count);
-    DynamicArray(int size);
+    explicit DynamicArray(int size);
     DynamicArray(const DynamicArray<T>& other);
     ~DynamicArray();
-    
+
     T Get(int index) const;
-    int GetSize() const;    
-    int GetCapacity() const;
-    
+    int GetSize() const;
     void Set(int index, T value);
-    void Resize(int newSize); 
-    
+    void Resize(int newSize);
+
     DynamicArray<T>& operator=(const DynamicArray<T>& other);
 };
 

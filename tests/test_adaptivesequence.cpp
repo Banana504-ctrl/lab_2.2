@@ -64,7 +64,7 @@ void testAdaptiveSequenceAppend() {
     
     seq.Append(1);
     seq.Append(2);
-    seq.Append(3);
+    seq.Append(2);
     seq.Append(4);
     seq.Append(5);
     

@@ -8,6 +8,13 @@ template <class T>
 class ArraySequence : public Sequence<T> {
 private:
     DynamicArray<T>* items;
+    
+    DynamicArray<T>* cloneItems() const {
+        DynamicArray<T>* copy = new DynamicArray<T>(items->GetSize());
+        for (int i = 0; i < items->GetSize(); ++i)
+            copy->Set(i, items->Get(i));
+        return copy;
+    }
 
 public:
     ArraySequence();
@@ -25,7 +32,7 @@ public:
     void Append(T item) override;
     void Prepend(T item) override;
     void InsertAt(T item, int index) override;
-    
+
     Sequence<T>* Map(T (*func)(T)) const override;
     Sequence<T>* Where(bool (*predicate)(T)) const override;
     T Reduce(T (*func)(T, T), T initialValue) const override;
