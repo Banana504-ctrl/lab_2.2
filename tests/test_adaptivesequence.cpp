@@ -4,28 +4,28 @@
 void testAdaptiveSequenceConstructorEmpty() {
     AdaptiveSequence<int> seq;
     
-    TEST_ASSERT(seq.GetLength() == 0, "AdaptiveSequence::AdaptiveSequence()", "AdaptiveSequence.cpp",
+    TEST_ASSERT(seq.GetLength() == 0, "AdaptiveSequence::AdaptiveSequence", "AdaptiveSequence.cpp",
                 "GetLength() ожидалось 0, получено " + std::to_string(seq.GetLength()));
-    TEST_ASSERT(seq.GetCurrentMode() == StorageMode::ARRAY, "AdaptiveSequence::AdaptiveSequence()", "AdaptiveSequence.cpp",
-                "Режим по умлочанию должен быть ARRAY");
+    TEST_ASSERT(seq.GetCurrentMode() == StorageMode::ARRAY, "AdaptiveSequence::AdaptiveSequence", "AdaptiveSequence.cpp",
+                "Режим по умолчанию должен быть ARRAY");
     
-    TEST_PASS("AdaptiveSequence::AdaptiveSequence()", "AdaptiveSequence.cpp");
+    TEST_PASS("AdaptiveSequence::AdaptiveSequence", "AdaptiveSequence.cpp");
 }
 
 void testAdaptiveSequenceConstructorFromArray() {
     int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     AdaptiveSequence<int> seq(arr, 10);
     
-    TEST_ASSERT(seq.GetLength() == 10, "AdaptiveSequence::AdaptiveSequence(T*, int)", "AdaptiveSequence.cpp",
+    TEST_ASSERT(seq.GetLength() == 10, "AdaptiveSequence::AdaptiveSequence", "AdaptiveSequence.cpp",
                 "GetLength() ожидалось 10, получено " + std::to_string(seq.GetLength()));
     
     for (int i = 0; i < 10; ++i) {
-        TEST_ASSERT(seq.Get(i) == arr[i], "AdaptiveSequence::AdaptiveSequence(T*, int)", "AdaptiveSequence.cpp",
+        TEST_ASSERT(seq.Get(i) == arr[i], "AdaptiveSequence::Get", "AdaptiveSequence.cpp",
                     "По индексу " + std::to_string(i) + " ожидалось " + std::to_string(arr[i]) + 
                     ", получено " + std::to_string(seq.Get(i)));
     }
     
-    TEST_PASS("AdaptiveSequence::AdaptiveSequence(T*, int)", "AdaptiveSequence.cpp");
+    TEST_PASS("AdaptiveSequence::AdaptiveSequence", "AdaptiveSequence.cpp");
 }
 
 void testAdaptiveSequenceSwitchModeEvenOdd() {
@@ -34,7 +34,7 @@ void testAdaptiveSequenceSwitchModeEvenOdd() {
     
     int switchCount = 0;
 
-    TEST_ASSERT(seq.GetCurrentMode() == StorageMode::ARRAY, "AdaptiveSequence::SwitchMode", "AdaptiveSequence.cpp",
+    TEST_ASSERT(seq.GetCurrentMode() == StorageMode::ARRAY, "AdaptiveSequence::GetCurrentMode", "AdaptiveSequence.cpp",
                 "При чётном переключении, начиная с нулевого, режим должен быть ARRAY");
     
     for (int i = 1; i <= 5; ++i) {
@@ -51,7 +51,7 @@ void testAdaptiveSequenceSwitchModeEvenOdd() {
     }
     
     for (int i = 0; i < 5; ++i) {
-        TEST_ASSERT(seq.Get(i) == arr[i], "AdaptiveSequence::SwitchMode", "AdaptiveSequence.cpp",
+        TEST_ASSERT(seq.Get(i) == arr[i], "AdaptiveSequence::Get после SwitchMode", "AdaptiveSequence.cpp",
                     "После " + std::to_string(switchCount) + " переключений, по индексу " + std::to_string(i) + 
                     " ожидалось " + std::to_string(arr[i]) + ", получено " + std::to_string(seq.Get(i)));
     }
@@ -64,7 +64,7 @@ void testAdaptiveSequenceAppend() {
     
     seq.Append(1);
     seq.Append(2);
-    seq.Append(2);
+    seq.Append(3);
     seq.Append(4);
     seq.Append(5);
     
@@ -73,7 +73,7 @@ void testAdaptiveSequenceAppend() {
     
     int expected[] = {1, 2, 3, 4, 5};
     for (int i = 0; i < 5; ++i) {
-        TEST_ASSERT(seq.Get(i) == expected[i], "AdaptiveSequence::Append", "AdaptiveSequence.cpp",
+        TEST_ASSERT(seq.Get(i) == expected[i], "AdaptiveSequence::Get после Append", "AdaptiveSequence.cpp",
                     "По индексу " + std::to_string(i) + " ожидалось " + std::to_string(expected[i]) + 
                     ", получено " + std::to_string(seq.Get(i)));
     }
@@ -93,17 +93,17 @@ void testAdaptiveSequenceAppendAfterSwitch() {
     seq.Append(4);
     seq.Append(5);
     
-    TEST_ASSERT(seq.GetLength() == 5, "AdaptiveSequence::Append", "AdaptiveSequence.cpp",
+    TEST_ASSERT(seq.GetLength() == 5, "AdaptiveSequence::Append после SwitchMode", "AdaptiveSequence.cpp",
                 "После Append в режиме LIST, ожидаемая длина 5, получена " + std::to_string(seq.GetLength()));
     
     int expected[] = {1, 2, 3, 4, 5};
     for (int i = 0; i < 5; ++i) {
-        TEST_ASSERT(seq.Get(i) == expected[i], "AdaptiveSequence::Append", "AdaptiveSequence.cpp",
+        TEST_ASSERT(seq.Get(i) == expected[i], "AdaptiveSequence::Get после Append и SwitchMode", "AdaptiveSequence.cpp",
                     "После смены режима и Append по индексу " + std::to_string(i) + " ожидалось " + std::to_string(expected[i]) + 
                     ", получено " + std::to_string(seq.Get(i)));
     }
     
-    TEST_PASS("AdaptiveSequence::Append", "AdaptiveSequence.cpp");
+    TEST_PASS("AdaptiveSequence::Append после SwitchMode", "AdaptiveSequence.cpp");
 }
 
 void testAdaptiveSequencePrepend() {
@@ -118,9 +118,9 @@ void testAdaptiveSequencePrepend() {
     
     int expected[] = {1, 2, 3};
     for (int i = 0; i < 3; ++i) {
-        TEST_ASSERT(seq.Get(i) == expected[i], "AdaptiveSequence::Prepend", "AdaptiveSequence.cpp",
-                    "По индексу " + std::to_string(i) + " получено " + std::to_string(expected[i]) + 
-                    ", ожидалось " + std::to_string(seq.Get(i)));
+        TEST_ASSERT(seq.Get(i) == expected[i], "AdaptiveSequence::Get после Prepend", "AdaptiveSequence.cpp",
+                    "По индексу " + std::to_string(i) + " ожидалось " + std::to_string(expected[i]) + 
+                    ", получено " + std::to_string(seq.Get(i)));
     }
     
     TEST_PASS("AdaptiveSequence::Prepend", "AdaptiveSequence.cpp");
@@ -140,12 +140,12 @@ void testAdaptiveSequencePrependAfterSwitch() {
     
     int expected[] = {1, 2, 3, 4, 5};
     for (int i = 0; i < 5; ++i) {
-        TEST_ASSERT(seq.Get(i) == expected[i], "AdaptiveSequence::Prepend", "AdaptiveSequence.cpp",
+        TEST_ASSERT(seq.Get(i) == expected[i], "AdaptiveSequence::Get после Prepend и SwitchMode", "AdaptiveSequence.cpp",
                     "После смены режима и Prepend, по индексу " + std::to_string(i) + " ожидалось " + std::to_string(expected[i]) + 
-                    ", got " + std::to_string(seq.Get(i)));
+                    ", получено " + std::to_string(seq.Get(i)));
     }
     
-    TEST_PASS("AdaptiveSequence::Prepend", "AdaptiveSequence.cpp");
+    TEST_PASS("AdaptiveSequence::Prepend после SwitchMode", "AdaptiveSequence.cpp");
 }
 
 void testAdaptiveSequenceInsertAt() {
@@ -156,7 +156,7 @@ void testAdaptiveSequenceInsertAt() {
     
     int expected[] = {1, 2, 3, 4, 5};
     for (int i = 0; i < 5; ++i) {
-        TEST_ASSERT(seq.Get(i) == expected[i], "AdaptiveSequence::InsertAt", "AdaptiveSequence.cpp",
+        TEST_ASSERT(seq.Get(i) == expected[i], "AdaptiveSequence::Get после InsertAt", "AdaptiveSequence.cpp",
                     "После InsertAt, по индексу " + std::to_string(i) + " ожидалось " + std::to_string(expected[i]) + 
                     ", получено " + std::to_string(seq.Get(i)));
     }
@@ -173,12 +173,12 @@ void testAdaptiveSequenceInsertAtAfterSwitch() {
     
     int expected[] = {1, 2, 3, 4, 5};
     for (int i = 0; i < 5; ++i) {
-        TEST_ASSERT(seq.Get(i) == expected[i], "AdaptiveSequence::InsertAt", "AdaptiveSequence.cpp",
+        TEST_ASSERT(seq.Get(i) == expected[i], "AdaptiveSequence::Get после InsertAt и SwitchMode", "AdaptiveSequence.cpp",
                     "После смены режима и InsertAt, по индексу " + std::to_string(i) + " ожидалось " + std::to_string(expected[i]) + 
                     ", получено " + std::to_string(seq.Get(i)));
     }
     
-    TEST_PASS("AdaptiveSequence::InsertAt", "AdaptiveSequence.cpp");
+    TEST_PASS("AdaptiveSequence::InsertAt после SwitchMode", "AdaptiveSequence.cpp");
 }
 
 void testAdaptiveSequenceGetFirst() {
@@ -189,8 +189,8 @@ void testAdaptiveSequenceGetFirst() {
                 "GetFirst() ожидалось 100, получено " + std::to_string(seq.GetFirst()));
     
     seq.SwitchMode();
-    TEST_ASSERT(seq.GetFirst() == 100, "AdaptiveSequence::GetFirst", "AdaptiveSequence.cpp",
-                "После смены режима в GetFirst() ожилалось 100, получено " + std::to_string(seq.GetFirst()));
+    TEST_ASSERT(seq.GetFirst() == 100, "AdaptiveSequence::GetFirst после SwitchMode", "AdaptiveSequence.cpp",
+                "После смены режима GetFirst() ожидалось 100, получено " + std::to_string(seq.GetFirst()));
     
     TEST_PASS("AdaptiveSequence::GetFirst", "AdaptiveSequence.cpp");
 }
@@ -203,8 +203,8 @@ void testAdaptiveSequenceGetLast() {
                 "GetLast() ожидалось 5, получено " + std::to_string(seq.GetLast()));
     
     seq.SwitchMode();
-    TEST_ASSERT(seq.GetLast() == 5, "AdaptiveSequence::GetLast", "AdaptiveSequence.cpp",
-                "После смены режима в GetLast() ожидалось 5, получено " + std::to_string(seq.GetLast()));
+    TEST_ASSERT(seq.GetLast() == 5, "AdaptiveSequence::GetLast после SwitchMode", "AdaptiveSequence.cpp",
+                "После смены режима GetLast() ожидалось 5, получено " + std::to_string(seq.GetLast()));
     
     TEST_PASS("AdaptiveSequence::GetLast", "AdaptiveSequence.cpp");
 }
@@ -219,7 +219,7 @@ void testAdaptiveSequenceSet() {
     
     int expected[] = {10, 2, 30, 4, 50};
     for (int i = 0; i < 5; ++i) {
-        TEST_ASSERT(seq.Get(i) == expected[i], "AdaptiveSequence::Set", "AdaptiveSequence.cpp",
+        TEST_ASSERT(seq.Get(i) == expected[i], "AdaptiveSequence::Get после Set", "AdaptiveSequence.cpp",
                     "После Set в режиме ARRAY, по индексу " + std::to_string(i) + " ожидалось " + std::to_string(expected[i]) + 
                     ", получено " + std::to_string(seq.Get(i)));
     }
@@ -230,7 +230,7 @@ void testAdaptiveSequenceSet() {
     
     int expected2[] = {10, 20, 30, 40, 50};
     for (int i = 0; i < 5; ++i) {
-        TEST_ASSERT(seq.Get(i) == expected2[i], "AdaptiveSequence::Set", "AdaptiveSequence.cpp",
+        TEST_ASSERT(seq.Get(i) == expected2[i], "AdaptiveSequence::Get после Set и SwitchMode", "AdaptiveSequence.cpp",
                     "После Set в режиме LIST, по индексу " + std::to_string(i) + " ожидалось " + std::to_string(expected2[i]) + 
                     ", получено " + std::to_string(seq.Get(i)));
     }
@@ -251,8 +251,8 @@ void testAdaptiveSequenceMap() {
     
     int expected[] = {3, 6, 9, 12, 15};
     for (int i = 0; i < 5; ++i) {
-        TEST_ASSERT(result->Get(i) == expected[i], "AdaptiveSequence::Map", "AdaptiveSequence.cpp",
-                    "Резльтат Map по индексу " + std::to_string(i) + " ожидался " + std::to_string(expected[i]) + 
+        TEST_ASSERT(result->Get(i) == expected[i], "AdaptiveSequence::Map результат", "AdaptiveSequence.cpp",
+                    "Результат Map по индексу " + std::to_string(i) + " ожидался " + std::to_string(expected[i]) + 
                     ", получен " + std::to_string(result->Get(i)));
     }
     
@@ -272,13 +272,13 @@ void testAdaptiveSequenceMapAfterSwitch() {
     
     int expected[] = {2, 4, 6, 8, 10};
     for (int i = 0; i < 5; ++i) {
-        TEST_ASSERT(result->Get(i) == expected[i], "AdaptiveSequence::Map", "AdaptiveSequence.cpp",
+        TEST_ASSERT(result->Get(i) == expected[i], "AdaptiveSequence::Map после SwitchMode", "AdaptiveSequence.cpp",
                     "Результат Map после смены режима по индексу " + std::to_string(i) + " ожидался " + std::to_string(expected[i]) + 
                     ", получен " + std::to_string(result->Get(i)));
     }
     
     delete result;
-    TEST_PASS("AdaptiveSequence::Map", "AdaptiveSequence.cpp");
+    TEST_PASS("AdaptiveSequence::Map после SwitchMode", "AdaptiveSequence.cpp");
 }
 
 void testAdaptiveSequenceWhere() {
@@ -294,7 +294,7 @@ void testAdaptiveSequenceWhere() {
     
     int expected[] = {2, 4, 6, 8, 10};
     for (int i = 0; i < 5; ++i) {
-        TEST_ASSERT(result->Get(i) == expected[i], "AdaptiveSequence::Where", "AdaptiveSequence.cpp",
+        TEST_ASSERT(result->Get(i) == expected[i], "AdaptiveSequence::Where результат", "AdaptiveSequence.cpp",
                     "Результат Where по индексу " + std::to_string(i) + " ожидался " + std::to_string(expected[i]) + 
                     ", получен " + std::to_string(result->Get(i)));
     }
@@ -317,7 +317,7 @@ void testAdaptiveSequenceReduce() {
     seq.SwitchMode();
     result = seq.Reduce(sum, 0);
     
-    TEST_ASSERT(result == 15, "AdaptiveSequence::Reduce", "AdaptiveSequence.cpp",
+    TEST_ASSERT(result == 15, "AdaptiveSequence::Reduce после SwitchMode", "AdaptiveSequence.cpp",
                 "После смены режима Reduce(sum) ожидалось 15, получено " + std::to_string(result));
     
     TEST_PASS("AdaptiveSequence::Reduce", "AdaptiveSequence.cpp");
@@ -330,18 +330,18 @@ void testAdaptiveSequenceCopyConstructor() {
     
     AdaptiveSequence<int> seq2(seq1);
     
-    TEST_ASSERT(seq2.GetLength() == 5, "AdaptiveSequence::AdaptiveSequence(const AdaptiveSequence&)", "AdaptiveSequence.cpp",
+    TEST_ASSERT(seq2.GetLength() == 5, "AdaptiveSequence::AdaptiveSequence копирующий", "AdaptiveSequence.cpp",
                 "После копирования ожидаемая длина 5, получена " + std::to_string(seq2.GetLength()));
-    TEST_ASSERT(seq2.GetCurrentMode() == StorageMode::LIST, "AdaptiveSequence::AdaptiveSequence(const AdaptiveSequence&)", "AdaptiveSequence.cpp",
+    TEST_ASSERT(seq2.GetCurrentMode() == StorageMode::LIST, "AdaptiveSequence::GetCurrentMode после копирования", "AdaptiveSequence.cpp",
                 "Ожидаемый режим копии LIST");
     
     for (int i = 0; i < 5; ++i) {
-        TEST_ASSERT(seq2.Get(i) == arr[i], "AdaptiveSequence::AdaptiveSequence(const AdaptiveSequence&)", "AdaptiveSequence.cpp",
+        TEST_ASSERT(seq2.Get(i) == arr[i], "AdaptiveSequence::Get после копирования", "AdaptiveSequence.cpp",
                     "В копии по индексу " + std::to_string(i) + " ожидалось " + std::to_string(arr[i]) + 
                     ", получено " + std::to_string(seq2.Get(i)));
     }
     
-    TEST_PASS("AdaptiveSequence::AdaptiveSequence(const AdaptiveSequence&)", "AdaptiveSequence.cpp");
+    TEST_PASS("AdaptiveSequence::AdaptiveSequence копирующий", "AdaptiveSequence.cpp");
 }
 
 void testAdaptiveSequenceAssignment() {
@@ -355,11 +355,11 @@ void testAdaptiveSequenceAssignment() {
     
     TEST_ASSERT(seq2.GetLength() == 5, "AdaptiveSequence::operator=", "AdaptiveSequence.cpp",
                 "После присваивания ожидаемая длина 5, получена " + std::to_string(seq2.GetLength()));
-    TEST_ASSERT(seq2.GetCurrentMode() == StorageMode::LIST, "AdaptiveSequence::operator=", "AdaptiveSequence.cpp",
+    TEST_ASSERT(seq2.GetCurrentMode() == StorageMode::LIST, "AdaptiveSequence::operator= режим", "AdaptiveSequence.cpp",
                 "После присваивания ожидаемый режим LIST");
     
     for (int i = 0; i < 5; ++i) {
-        TEST_ASSERT(seq2.Get(i) == arr1[i], "AdaptiveSequence::operator=", "AdaptiveSequence.cpp",
+        TEST_ASSERT(seq2.Get(i) == arr1[i], "AdaptiveSequence::Get после присваивания", "AdaptiveSequence.cpp",
                     "После присваивания по индексу " + std::to_string(i) + " ожидалось " + std::to_string(arr1[i]) + 
                     ", получено " + std::to_string(seq2.Get(i)));
     }

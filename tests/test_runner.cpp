@@ -17,6 +17,13 @@ std::vector<TestResult> testResults;
 #include <windows.h>
 #endif
 
+std::string extractMethodName(const std::string& fullName) {
+    size_t pos = fullName.find("::");
+    if (pos != std::string::npos) {
+        return fullName.substr(pos + 2);
+    }
+    return fullName;
+}
 
 int main() {
     #ifdef _WIN32
@@ -122,13 +129,13 @@ int main() {
             SetGreen();
             std::cout << "[ПРОЙДЕНО] ";
             SetWhite();
-            std::cout << res.functionName << " (" << res.fileName << ")\n";
+            std::cout << res.functionName << " (" << res.fileName << ", метод " << extractMethodName(res.functionName) << ")\n";
             passed++;
         } else {
             SetRed();
             std::cout << "[ПРОВАЛЕНО] ";
             SetWhite();
-            std::cout << res.functionName << " (" << res.fileName << ")\n";
+            std::cout << res.functionName << " (" << res.fileName << ", метод " << extractMethodName(res.functionName) << ")\n";
             failed++;
         }
     }

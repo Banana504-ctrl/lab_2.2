@@ -1,15 +1,17 @@
 #include "ui.h"
+#include "DynamicArray.h"
+#include <iostream>
 
 int main() {
-    runProgram();
+    //runProgram();
+
+
+    int data[5] = {1, 2, 3, 4, 5};
+    DynamicArray<int> arr(data, 5);
+    std::cout << sizeof(arr) << std::endl;
+    std::cout << sizeof(&arr) << std::endl;
+
     return 0;
 }
 
-//bit sequence - поправить
-//arraysequence - емкость
-
-//что такое указатель? что такое ссылка? константная ссылка? зачем нам это нужно?
-//сюда же. Почему, например, мы в ArraySequence используем DynamicArray<T>* items (т.е указатель), а не просто DynamicArray<T>?
-//что такое конструктор? что такое деструктор? когда вызывается деструктор?
-//абстрактный класс? можно ли создавать от него объекты?
-//чем отличается . от ->
+//написать самим односвязный линейный список
